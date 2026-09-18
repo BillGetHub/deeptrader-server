@@ -100,6 +100,26 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Real historical prices for sparklines (last 24 hours, hourly)
+app.get('/api/sparkline/:symbol', async (req, res) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase(); // e.g. BTCUSDT
+    const url = `https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=1h&limit=24`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Binance returned ' + response.status);
+    }
+    const data = await response.json();
+    // Binance kline format: [openTime, open, high, low, close, volume, ...]
+    // We want the close prices (index 4)
+    const closes = data.map(k => parseFloat(k[4]));
+    res.json(closes);
+  } catch (error) {
+    console.error('Klines fetch error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch klines' });
+  }
+});
+
 // ============================================================
 // Start server
 // ============================================================
