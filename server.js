@@ -11,7 +11,7 @@ app.use(express.json());
 // Real prices from Binance (public market data, no API key)
 // ============================================================
 const BINANCE_URL =
-  'https://data-api.binance.vision/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%2C%22SOLUSDT%22%2C%22ADAUSDT%22%2C%22DOTUSDT%22%2C%22MATICUSDT%22%2C%22XRPUSDT%22%2C%22DOGEUSDT%22%5D';
+  'https://data-api.binance.vision/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%2C%22SOLUSDT%22%2C%22ADAUSDT%22%2C%22DOTUSDT%22%2C%22MATICUSDT%22%2C%22XRPUSDT%22%2C%22DOGEUSDT%22%2C%22BNBUSDT%22%2C%22LTCUSDT%22%2C%22LINKUSDT%22%2C%22AVAXUSDT%22%2C%22UNIUSDT%22%5D';
 
 async function fetchBinancePrices() {
   const response = await fetch(BINANCE_URL);
