@@ -120,6 +120,43 @@ app.get('/api/sparkline/:symbol', async (req, res) => {
   }
 });
 
+// Historical klines for charts
+// interval: 1m, 5m, 15m, 1h, 4h, 1d
+// limit: number of candles (max 500)
+app.get('/api/klines/:symbol/:interval', async (req, res) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const interval = req.params.interval;
+    const limit = req.query.limit || 24;
+
+    // Map UI interval to Binance interval + limit
+    const intervalMap = {
+      '1H': { interval: '1m', limit: 60 },
+      '24H': { interval: '1h', limit: 24 },
+      '7D': { interval: '4h', limit: 42 },
+      '30D': { interval: '1d', limit: 30 },
+    };
+
+    const mapped = intervalMap[interval] || { interval: '1h', limit: 24 };
+
+    const url = `https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=${mapped.interval}&limit=${mapped.limit}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Binance returned ' + response.status);
+    }
+    const data = await response.json();
+    // Return simplified: [{ time, price }, ...]
+    const candles = data.map((k) => ({
+      time: k[0],   // open time
+      price: parseFloat(k[4]), // close price
+    }));
+    res.json(candles);
+  } catch (error) {
+    console.error('Klines error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch klines' });
+  }
+});
+
 // ============================================================
 // Start server
 // ============================================================
