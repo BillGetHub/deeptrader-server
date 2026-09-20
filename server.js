@@ -147,9 +147,12 @@ app.get('/api/klines/:symbol/:interval', async (req, res) => {
     const data = await response.json();
     // Return simplified: [{ time, price }, ...]
     const candles = data.map((k) => ({
-      time: k[0],   // open time
-      price: parseFloat(k[4]), // close price
-    }));
+      time: k[0],
+      open: parseFloat(k[1]),
+      high: parseFloat(k[2]),
+      low: parseFloat(k[3]),
+      close: parseFloat(k[4]),
+    }));    
     res.json(candles);
   } catch (error) {
     console.error('Klines error:', error.message);
